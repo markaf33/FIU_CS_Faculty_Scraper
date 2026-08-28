@@ -296,6 +296,81 @@
     .status-bar{ padding:16px 18px 0; }
     main{ padding:24px 18px 80px; }
   }
+
+  /* ---------- CSRankings panel ---------- */
+  .csr-panel{
+    max-width:1040px;
+    margin:0 auto 100px;
+    padding:0 24px;
+  }
+  .csr-head{
+    background:var(--navy);
+    border-radius:3px 3px 0 0;
+    padding:16px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .csr-head h2{
+    font-family:'Spectral',serif;
+    font-weight:600;
+    font-size:19px;
+    color:var(--paper-card);
+    margin:0;
+  }
+  .csr-head .csr-sub{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-top:4px;
+  }
+  .csr-body{
+    background:var(--paper-card);
+    border:1px solid var(--rule);
+    border-top:none;
+    border-radius:0 0 3px 3px;
+    padding:20px 22px;
+  }
+  .csr-status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--slate);
+    margin:0 0 14px;
+  }
+  .csr-toolbar{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
+  }
+  .csr-list{
+    max-height:420px;
+    overflow-y:auto;
+    border-top:1px solid var(--rule);
+  }
+  .csr-row{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    padding:9px 2px;
+    border-bottom:1px dotted var(--rule);
+    font-size:13.5px;
+  }
+  .csr-row .csr-name{
+    font-family:'Spectral',serif;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .csr-row .csr-orcid{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--slate);
+    white-space:nowrap;
+  }
 </style>
 </head>
 <body>
@@ -327,6 +402,20 @@
 </main>
 
 <footer>FIU CIS Faculty Tool — data sourced live from cis.fiu.edu</footer>
+
+<div class="csr-panel">
+  <div class="csr-head">
+    <h2>CSRankings Reference<span class="csr-sub">Cross-check against csrankings.org</span></h2>
+    <button class="btn" id="csr-btn">Pull CSRankings Data</button>
+  </div>
+  <div class="csr-body">
+    <p class="csr-status" id="csr-status">Not run yet. Click "Pull CSRankings Data" to fetch current FIU entries from csrankings.org.</p>
+    <div class="csr-toolbar" id="csr-toolbar" style="display:none;">
+      <button class="btn ghost" id="csr-export-btn" style="color:var(--ink); border-color:var(--rule);">Export CSRankings CSV</button>
+    </div>
+    <div class="csr-list" id="csr-list"></div>
+  </div>
+</div>
 
 <script>
   const scrapeBtn = document.getElementById('scrape-btn');
@@ -449,6 +538,116 @@
   scrapeBtn.addEventListener('click', runScrape);
   exportBtn.addEventListener('click', exportCsv);
   searchInput.addEventListener('input', applyFilter);
+
+  /* ---------- CSRankings Reference panel ---------- */
+
+  const CSR_TARGET_AFFILIATION = 'Florida International University';
+  const CSR_LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
+
+  const csrBtn = document.getElementById('csr-btn');
+  const csrStatus = document.getElementById('csr-status');
+  const csrList = document.getElementById('csr-list');
+  const csrToolbar = document.getElementById('csr-toolbar');
+  const csrExportBtn = document.getElementById('csr-export-btn');
+
+  let csrData = [];
+
+  // Minimal CSV parser: handles quoted fields, embedded commas, escaped quotes, \r\n.
+  function parseCsv(text){
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+
+    for (let i = 0; i < text.length; i++){
+      const c = text[i];
+      if (inQuotes){
+        if (c === '"'){
+          if (text[i+1] === '"'){ field += '"'; i++; }
+          else { inQuotes = false; }
+        } else { field += c; }
+      } else if (c === '"'){
+        inQuotes = true;
+      } else if (c === ','){
+        row.push(field); field = '';
+      } else if (c === '\n'){
+        row.push(field); rows.push(row); row = []; field = '';
+      } else if (c === '\r'){
+        // skip
+      } else {
+        field += c;
+      }
+    }
+    if (field.length || row.length){ row.push(field); rows.push(row); }
+    if (!rows.length) return [];
+
+    const headers = rows[0].map(h => h.trim());
+    return rows.slice(1)
+      .filter(r => r.length === headers.length && r.some(v => v !== ''))
+      .map(r => Object.fromEntries(headers.map((h, idx) => [h, r[idx]])));
+  }
+
+  async function runCsrScrape(){
+    csrBtn.disabled = true;
+    csrToolbar.style.display = 'none';
+    csrList.innerHTML = '';
+    csrData = [];
+
+    const found = [];
+    let completed = 0, failed = 0;
+
+    for (const letter of CSR_LETTERS){
+      csrStatus.textContent = `Pulling shard ${letter}.csv from csrankings.org… (${completed}/${CSR_LETTERS.length})`;
+      try {
+        const url = `https://raw.githubusercontent.com/emeryberger/CSrankings/gh-pages/csrankings-${letter}.csv`;
+        const res = await fetch(url);
+        if (res.ok){
+          const rows = parseCsv(await res.text());
+          for (const r of rows){
+            if ((r.affiliation || '').trim() === CSR_TARGET_AFFILIATION){
+              found.push({ Name: (r.name || '').trim(), ORCID: (r.orcid || '').trim() });
+            }
+          }
+        } else { failed++; }
+      } catch (err){ failed++; }
+      completed++;
+    }
+
+    csrData = found.sort((a,b) => a.Name.localeCompare(b.Name));
+    renderCsrList(csrData);
+
+    const failNote = failed ? ` (${failed} shard${failed===1?'':'s'} failed to load)` : '';
+    csrStatus.textContent = `Found ${csrData.length} FIU record${csrData.length===1?'':'s'} on CSrankings.org${failNote}.`;
+    csrToolbar.style.display = csrData.length ? 'flex' : 'none';
+    csrBtn.disabled = false;
+  }
+
+  function renderCsrList(list){
+    if (!list.length){
+      csrList.innerHTML = '<div class="no-results" style="grid-column:auto;">No matching CSrankings entries found.</div>';
+      return;
+    }
+    csrList.innerHTML = list.map(p => `
+      <div class="csr-row">
+        <span class="csr-name">${escapeHtml(p.Name)}</span>
+        <span class="csr-orcid">${escapeHtml(p.ORCID || 'no ORCID on file')}</span>
+      </div>
+    `).join('');
+  }
+
+  function exportCsrCsv(){
+    if (!csrData.length) return;
+    const rows = [['Name','ORCID'], ...csrData.map(p => [p.Name||'', p.ORCID||''])];
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'fiu_csranking.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  csrBtn.addEventListener('click', runCsrScrape);
+  csrExportBtn.addEventListener('click', exportCsrCsv);
 </script>
 
 </body>
