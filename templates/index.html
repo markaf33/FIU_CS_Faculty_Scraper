@@ -199,81 +199,70 @@
   }
 
   .catalog{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-    gap:20px;
-  }
-
-  .card{
+    display:block;
+    overflow-x:auto;
     background:var(--paper-card);
     border:1px solid var(--rule);
     border-radius:3px;
-    padding:20px 20px 18px;
-    position:relative;
-    box-shadow:0 1px 0 rgba(11,31,58,0.04);
-    animation:riseIn 0.35s ease both;
   }
-  @keyframes riseIn{
-    from{opacity:0; transform:translateY(6px);}
-    to{opacity:1; transform:translateY(0);}
-  }
-  .card::before{
-    /* punch hole, card-catalog signature */
-    content:"";
-    position:absolute;
-    top:14px; left:14px;
-    width:10px; height:10px;
-    border-radius:50%;
-    background:var(--paper);
-    border:1px solid var(--rule);
-    box-shadow: 220px 0 0 -1px var(--paper), 220px 0 0 0 var(--rule);
-  }
-  .card{ padding-left:38px; }
 
-  .card .name{
-    font-family:'Spectral',serif;
+  .faculty-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:var(--paper-card);
+  }
+
+  .faculty-table th,
+  .faculty-table td{
+    padding:11px 14px;
+    text-align:left;
+    vertical-align:middle;
+    border-bottom:1px dotted var(--rule);
+  }
+
+  .faculty-table th{
+    position:sticky;
+    top:0;
+    z-index:1;
+    background:var(--navy);
+    color:var(--paper-card);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
     font-weight:600;
-    font-size:19px;
-    margin:0 0 6px;
-    line-height:1.25;
-    padding-bottom:10px;
-    border-bottom:1px solid var(--rule);
-  }
-  .card .badge{
-    display:inline-block;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10.5px;
-    letter-spacing:0.06em;
+    letter-spacing:0.04em;
     text-transform:uppercase;
-    padding:3px 8px;
-    border-radius:2px;
-    margin:10px 0 8px;
-    color:#fff;
   }
-  .badge.b-prof{ background:var(--navy); }
-  .badge.b-assoc{ background:var(--gold-deep); }
-  .badge.b-asst{ background:#6B7F5E; }
-  .badge.b-lect{ background:var(--slate); }
-  .badge.b-other{ background:#8A8073; }
 
-  .card .title-line{
-    font-size:13.5px;
+  .faculty-table td{
+    font-size:13px;
+  }
+
+  .faculty-table tbody tr:last-child td{ border-bottom:none; }
+
+  .faculty-table .faculty-name{
+    font-family:'Spectral',serif;
+    font-size:15px;
+    font-weight:600;
     color:var(--ink);
-    line-height:1.4;
-    margin:0 0 10px;
+    white-space:nowrap;
   }
-  .card .email{
+
+  .faculty-table .faculty-title{
+    color:var(--ink);
+  }
+
+  .faculty-table .faculty-email{
     font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
+    font-size:11.5px;
     color:var(--slate);
-    word-break:break-all;
     text-decoration:none;
-    border-bottom:1px dotted transparent;
+    white-space:nowrap;
   }
-  .card .email:hover{ color:var(--navy); border-color:var(--navy); }
+
+  .faculty-table .faculty-email:hover{ color:var(--navy); text-decoration:underline; }
 
   .no-results{
-    grid-column:1/-1;
     text-align:center;
     padding:50px 20px;
     font-family:'Spectral',serif;
@@ -296,7 +285,6 @@
     .status-bar{ padding:16px 18px 0; }
     main{ padding:24px 18px 80px; }
   }
-<<<<<<< HEAD
 
   /* ---------- CSRankings panel ---------- */
   .csr-panel{
@@ -350,30 +338,142 @@
   }
   .csr-list{
     max-height:420px;
-    overflow-y:auto;
-    border-top:1px solid var(--rule);
+    overflow:auto;
+    border:1px solid var(--rule);
+    border-radius:2px;
   }
-  .csr-row{
-    display:flex;
-    justify-content:space-between;
-    gap:16px;
-    padding:9px 2px;
+
+  .csr-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:520px;
+    background:var(--paper-card);
+  }
+
+  .csr-table th,
+  .csr-table td{
+    padding:10px 12px;
+    text-align:left;
     border-bottom:1px dotted var(--rule);
-    font-size:13.5px;
   }
-  .csr-row .csr-name{
+
+  .csr-table th{
+    position:sticky;
+    top:0;
+    z-index:1;
+    background:var(--navy);
+    color:var(--paper-card);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+
+  .csr-table tbody tr:last-child td{ border-bottom:none; }
+
+  .csr-name{
     font-family:'Spectral',serif;
     font-weight:600;
     color:var(--ink);
   }
-  .csr-row .csr-orcid{
+
+  .csr-orcid{
     font-family:'IBM Plex Mono',monospace;
     font-size:11.5px;
     color:var(--slate);
     white-space:nowrap;
   }
-=======
->>>>>>> 5c0b6e7 (Initial commit)
+
+  /* ---------- Compare panel ---------- */
+  .cmp-panel{
+    max-width:1040px;
+    margin:0 auto 100px;
+    padding:0 24px;
+  }
+  .cmp-head{
+    background:var(--navy);
+    border-radius:3px 3px 0 0;
+    padding:16px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .cmp-head h2{
+    font-family:'Spectral',serif;
+    font-weight:600;
+    font-size:19px;
+    color:var(--paper-card);
+    margin:0;
+  }
+  .cmp-head .cmp-sub{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-top:4px;
+  }
+  .cmp-body{
+    background:var(--paper-card);
+    border:1px solid var(--rule);
+    border-top:none;
+    border-radius:0 0 3px 3px;
+    padding:20px 22px;
+  }
+  .cmp-status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--slate);
+    margin:0 0 14px;
+  }
+  .cmp-toolbar{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
+  }
+  .cmp-results h3{
+    font-family:'Spectral',serif;
+    font-size:16px;
+    margin:20px 0 8px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .cmp-pill{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:2px 9px;
+    border-radius:999px;
+    color:#fff;
+  }
+  .cmp-pill.add{ background:#6B7F5E; }
+  .cmp-pill.rem{ background:#9C3B3B; }
+  .cmp-pill.match{ background:var(--slate); }
+  .cmp-table{
+    border-collapse:collapse;
+    width:100%;
+    font-size:12.5px;
+    background:var(--paper-card);
+  }
+  .cmp-table th, .cmp-table td{
+    border:1px solid var(--rule);
+    padding:6px 9px;
+    text-align:left;
+    vertical-align:top;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+  }
+  .cmp-table th{ background:var(--navy); color:var(--paper-card); font-weight:600; white-space:nowrap; }
+  .cmp-empty{
+    color:var(--slate);
+    font-style:italic;
+    font-size:13px;
+    padding:6px 0;
+  }
 </style>
 </head>
 <body>
@@ -406,7 +506,6 @@
 
 <footer>FIU CIS Faculty Tool — data sourced live from cis.fiu.edu</footer>
 
-<<<<<<< HEAD
 <div class="csr-panel">
   <div class="csr-head">
     <h2>CSRankings Reference<span class="csr-sub">Cross-check against csrankings.org</span></h2>
@@ -421,8 +520,20 @@
   </div>
 </div>
 
-=======
->>>>>>> 5c0b6e7 (Initial commit)
+<div class="cmp-panel">
+  <div class="cmp-head">
+    <h2>Roster Comparison<span class="cmp-sub">FIU scrape vs. CSRankings — additions &amp; removals</span></h2>
+    <button class="btn" id="cmp-btn" disabled>Compare Rosters</button>
+  </div>
+  <div class="cmp-body">
+    <p class="cmp-status" id="cmp-status">Run a scrape and pull CSRankings data above, then compare them here.</p>
+    <div class="cmp-toolbar" id="cmp-toolbar" style="display:none;">
+      <button class="btn ghost" id="cmp-export-btn" style="color:var(--ink); border-color:var(--rule);">Download diff CSV</button>
+    </div>
+    <div class="cmp-results" id="cmp-results"></div>
+  </div>
+</div>
+
 <script>
   const scrapeBtn = document.getElementById('scrape-btn');
   const exportBtn = document.getElementById('export-btn');
@@ -449,19 +560,31 @@
       catalog.innerHTML = '<div class="no-results">No entries match that search.</div>';
       return;
     }
-    catalog.innerHTML = list.map(p => {
-      const badge = badgeFor(p.Title);
+
+    const rows = list.map(p => {
       const emailHtml = p.Email
-        ? `<a class="email" href="mailto:${p.Email}">${p.Email}</a>`
-        : `<span class="email">—</span>`;
+        ? `<a class="faculty-email" href="mailto:${escapeHtml(p.Email)}">${escapeHtml(p.Email)}</a>`
+        : `<span class="faculty-email">—</span>`;
+
       return `
-        <div class="card">
-          <p class="name">${escapeHtml(p.Name || 'Unnamed')}</p>
-          <span class="badge ${badge.cls}">${escapeHtml(badge.label)}</span>
-          <p class="title-line">${escapeHtml(p.Title || '')}</p>
-          ${emailHtml}
-        </div>`;
+        <tr>
+          <td class="faculty-name">${escapeHtml(p.Name || 'Unnamed')}</td>
+          <td class="faculty-title">${escapeHtml(p.Title || '—')}</td>
+          <td>${emailHtml}</td>
+        </tr>`;
     }).join('');
+
+    catalog.innerHTML = `
+      <table class="faculty-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Title</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
   }
 
   function escapeHtml(str){
@@ -509,7 +632,7 @@
         showState('<span class="icon">☙</span> The scrape completed, but returned no entries.');
       } else {
         statePanel.style.display = 'none';
-        catalog.style.display = 'grid';
+        catalog.style.display = 'block';
         renderCards(allProfessors);
       }
 
@@ -518,6 +641,7 @@
       liveDot.classList.add('live');
       statusText.innerHTML = `<strong>${allProfessors.length}</strong> faculty members on record`;
       timestampText.textContent = 'Last scraped ' + new Date().toLocaleString();
+      updateCompareReadiness();
 
     } catch (err) {
       showState(`<span class="icon">✕</span> Could not complete the scrape.<div class="err-detail">${escapeHtml(err.message)}</div>`, true);
@@ -544,7 +668,6 @@
   scrapeBtn.addEventListener('click', runScrape);
   exportBtn.addEventListener('click', exportCsv);
   searchInput.addEventListener('input', applyFilter);
-<<<<<<< HEAD
 
   /* ---------- CSRankings Reference panel ---------- */
 
@@ -625,19 +748,32 @@
     csrStatus.textContent = `Found ${csrData.length} FIU record${csrData.length===1?'':'s'} on CSrankings.org${failNote}.`;
     csrToolbar.style.display = csrData.length ? 'flex' : 'none';
     csrBtn.disabled = false;
+    updateCompareReadiness();
   }
 
   function renderCsrList(list){
     if (!list.length){
-      csrList.innerHTML = '<div class="no-results" style="grid-column:auto;">No matching CSrankings entries found.</div>';
+      csrList.innerHTML = '<div class="no-results">No matching CSrankings entries found.</div>';
       return;
     }
-    csrList.innerHTML = list.map(p => `
-      <div class="csr-row">
-        <span class="csr-name">${escapeHtml(p.Name)}</span>
-        <span class="csr-orcid">${escapeHtml(p.ORCID || 'no ORCID on file')}</span>
-      </div>
+
+    const rows = list.map(p => `
+      <tr>
+        <td class="csr-name">${escapeHtml(p.Name)}</td>
+        <td class="csr-orcid">${escapeHtml(p.ORCID || 'no ORCID on file')}</td>
+      </tr>
     `).join('');
+
+    csrList.innerHTML = `
+      <table class="csr-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ORCID</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
   }
 
   function exportCsrCsv(){
@@ -655,8 +791,175 @@
 
   csrBtn.addEventListener('click', runCsrScrape);
   csrExportBtn.addEventListener('click', exportCsrCsv);
-=======
->>>>>>> 5c0b6e7 (Initial commit)
+
+  /* ---------- Roster comparison (FIU scrape vs. CSRankings) ---------- */
+
+  const cmpBtn = document.getElementById('cmp-btn');
+  const cmpStatus = document.getElementById('cmp-status');
+  const cmpToolbar = document.getElementById('cmp-toolbar');
+  const cmpExportBtn = document.getElementById('cmp-export-btn');
+  const cmpResults = document.getElementById('cmp-results');
+
+  let cmpDiff = null;
+
+  function cmpNormalize(name){
+    return (name || '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/æ/g, 'ae').replace(/œ/g, 'oe')
+      .replace(/\b\d{4}\b/g, '')
+      .replace(/\b(ph\.?d\.?|dr\.?|mr\.?|mrs\.?|ms\.?|jr\.?|sr\.?)\b/gi, '')
+      .replace(/[.,'-]/g, ' ')
+      .toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+  function cmpTokens(name){ return cmpNormalize(name).split(' ').filter(t => t.length > 0).sort(); }
+  function cmpSetKey(name){ return cmpTokens(name).join(' '); }
+
+  function cmpLevenshtein(a, b){
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    const matrix = [];
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+    for (let i = 1; i <= b.length; i++){
+      for (let j = 1; j <= a.length; j++){
+        if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
+        else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+      }
+    }
+    return matrix[b.length][a.length];
+  }
+
+  function cmpTokEq(a, b){
+    if (a === b) return true;
+    if (a.length === 1 && b.startsWith(a)) return true;
+    if (b.length === 1 && a.startsWith(b)) return true;
+    if (a.length >= 3 && b.length >= 3 && (a.startsWith(b) || b.startsWith(a))) return true;
+    if (a.length >= 4 && b.length >= 4){
+      const minL = Math.min(a.length, b.length);
+      if (a.substring(0, 3) === b.substring(0, 3) && cmpLevenshtein(a.substring(0, minL), b.substring(0, minL)) <= 1) return true;
+    }
+    const dist = cmpLevenshtein(a, b);
+    if (a.length >= 6 && b.length >= 6 && dist <= 2) return true;
+    if (a.length >= 5 && b.length >= 5 && dist <= 1) return true;
+    return false;
+  }
+
+  function cmpSubsetMatch(tA, tB){
+    const small = tA.length <= tB.length ? [...tA] : [...tB];
+    const big = tA.length <= tB.length ? [...tB] : [...tA];
+    if (small.length < 2) return false;
+
+    const usedBig = new Set();
+    let matchedCount = 0;
+
+    for (let i = 0; i < small.length; i++){
+      const t = small[i];
+      let bestIdx = -1;
+      for (let j = 0; j < big.length; j++){
+        if (usedBig.has(j)) continue;
+        const x = big[j];
+        if (t === x || (t.length >= 3 && x.length >= 3 && (t.startsWith(x) || x.startsWith(t)))){ bestIdx = j; break; }
+      }
+      if (bestIdx !== -1){ usedBig.add(bestIdx); small[i] = null; matchedCount++; }
+    }
+
+    for (let i = 0; i < small.length; i++){
+      if (small[i] === null) continue;
+      const t = small[i];
+      for (let j = 0; j < big.length; j++){
+        if (usedBig.has(j)) continue;
+        if (cmpTokEq(t, big[j])){ usedBig.add(j); matchedCount++; break; }
+      }
+    }
+    return matchedCount === small.length;
+  }
+
+  function cmpDedupe(names){
+    return names.filter((v, i, arr) => arr.findIndex(x => cmpNormalize(x) === cmpNormalize(v)) === i);
+  }
+
+  function updateCompareReadiness(){
+    if (allProfessors.length && csrData.length){
+      cmpBtn.disabled = false;
+      cmpStatus.textContent = `Ready: ${allProfessors.length} FIU scrape record(s) vs. ${csrData.length} CSRankings record(s).`;
+    } else {
+      cmpBtn.disabled = true;
+      const missing = [];
+      if (!allProfessors.length) missing.push('a scrape run');
+      if (!csrData.length) missing.push('CSRankings data');
+      cmpStatus.textContent = `Waiting on ${missing.join(' and ')}.`;
+    }
+  }
+
+  function runCompare(){
+    const A = cmpDedupe(allProfessors.map(p => p.Name || '').filter(Boolean));
+    const B = cmpDedupe(csrData.map(p => p.Name || '').filter(Boolean));
+
+    const matched = [];
+    const matchedA = new Set(), matchedB = new Set();
+
+    for (const a of A){
+      const tA = cmpTokens(a);
+      for (const b of B){
+        const tB = cmpTokens(b);
+        if (cmpSetKey(a) === cmpSetKey(b) || cmpSubsetMatch(tA, tB)){
+          matched.push({ a, b });
+          matchedA.add(a);
+          matchedB.add(b);
+        }
+      }
+    }
+
+    const onlyA = A.filter(a => !matchedA.has(a));
+    const onlyB = B.filter(b => !matchedB.has(b));
+
+    cmpDiff = { matched, onlyA, onlyB, nameA: 'FIU scrape', nameB: 'CSRankings' };
+    renderCompare();
+    cmpToolbar.style.display = 'flex';
+  }
+
+  function renderCompare(){
+    const { matched, onlyA, onlyB, nameA, nameB } = cmpDiff;
+
+    const section = (title, cls, rowsHtml, emptyMsg, count) =>
+      '<h3><span class="cmp-pill ' + cls + '">' + count + '</span>' + title + '</h3>' +
+      (count ? '<table class="cmp-table">' + rowsHtml + '</table>' : '<p class="cmp-empty">' + escapeHtml(emptyMsg) + '</p>');
+
+    const pairRows = (pairs, h1, h2) =>
+      '<tr><th>' + escapeHtml(h1) + '</th><th>' + escapeHtml(h2) + '</th></tr>' +
+      pairs.map(p => '<tr><td>' + escapeHtml(p.a) + '</td><td>' + escapeHtml(p.b) + '</td></tr>').join('');
+
+    cmpResults.innerHTML =
+      section('On CSRankings, not in FIU scrape (possible removes)', 'add',
+        '<tr><th>Name</th></tr>' + onlyB.map(n => '<tr><td>' + escapeHtml(n) + '</td></tr>').join(''),
+        'Nothing unique to CSRankings.', onlyB.length) +
+      section('In FIU scrape, not on CSRankings (possible adds)', 'rem',
+        '<tr><th>Name</th></tr>' + onlyA.map(n => '<tr><td>' + escapeHtml(n) + '</td></tr>').join(''),
+        'Nothing unique to the FIU scrape.', onlyA.length) +
+      section('In both', 'match',
+        pairRows(matched, nameA, nameB),
+        'No overlap — check that both datasets loaded correctly.', matched.length);
+  }
+
+  function exportCompareCsv(){
+    if (!cmpDiff) return;
+    const escCsv = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+    const lines = ['Status,Name in ' + cmpDiff.nameA + ',Name in ' + cmpDiff.nameB];
+    cmpDiff.onlyA.forEach(n => lines.push(['ONLY IN FIU SCRAPE', n, ''].map(escCsv).join(',')));
+    cmpDiff.onlyB.forEach(n => lines.push(['ONLY IN CSRANKINGS', '', n].map(escCsv).join(',')));
+    cmpDiff.matched.forEach(m => lines.push(['BOTH', m.a, m.b].map(escCsv).join(',')));
+
+    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'roster_comparison.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  cmpBtn.addEventListener('click', runCompare);
+  cmpExportBtn.addEventListener('click', exportCompareCsv);
 </script>
 
 </body>
