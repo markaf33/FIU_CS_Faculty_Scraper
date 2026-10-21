@@ -1,63 +1,196 @@
-# FIU CS Faculty Scraper
+# FIU CS Faculty Directory & CSRankings Comparison Tool
 
-A small Flask app that scrapes the current faculty roster from the FIU School of Computing & Information Sciences website and displays it as a searchable directory.
+A browser-based tool for collecting the Florida International University (FIU) School of Computing and Information Sciences faculty roster, retrieving FIU author records from CSRankings, and comparing the two lists to identify possible additions, removals, and matches.
 
-## What it does
+The application uses **Flask and Python** to retrieve FIU faculty data and **JavaScript in the browser** to fetch CSRankings data directly from GitHub. You do **not** need to clone the CSRankings repository or download its CSV files manually.
 
-- Pulls faculty data live from FIU's public WordPress REST API (`cis.fiu.edu/wp-json/wp/v2/staff-member`)
-- Filters entries down to specific staff categories (professors, associate/assistant professors, lecturers)
-- Serves a web page where you can trigger the scrape, browse results as cards, search/filter by name or title, and export the results to CSV
+## Features
 
-## Project structure
+- **FIU Faculty Scraper:** Fetch faculty records from the FIU WordPress REST API, including names, titles, and emails.
+- **Faculty Search:** Filter the displayed FIU roster by name or title.
+- **CSRankings Data:** Fetch `csrankings-a.csv` through `csrankings-z.csv` directly from the CSRankings GitHub repository, filtering for `Florida International University` and displaying each author's name and ORCID.
+- **Roster Comparison:** Compare the FIU and CSRankings lists using normalized and fuzzy name matching, and show records found in both lists or only one source.
+- **CSV Export:** Download the FIU faculty list, FIU CSRankings entries, or the comparison results.
 
-```
-fiu_scraper_python/
-├── app.py              # Flask routes (/ and /scrape)
-├── scraper_fiu.py       # Scraping logic + standalone CLI script
+## Project Structure
+
+Organize the files as follows:
+
+```text
+project-folder/
+├── app.py
+├── scraper_fiu.py
 ├── requirements.txt
-├── templates/
-│   └── index.html       # Frontend UI
-└── .gitignore
+└── templates/
+    └── index.html
 ```
 
-## Setup
+- `app.py` — Flask application, serves the webpage and provides the `/scrape` API endpoint.
+- `scraper_fiu.py` — Python scraper for FIU's WordPress faculty records.
+- `templates/index.html` — HTML, CSS, and JavaScript for the interface, direct CSRankings retrieval, comparison, and CSV exports.
+- `requirements.txt` — Python dependencies.
 
-1. Clone the repo and navigate into it:
-   ```
-   git clone <your-repo-url>
-   cd fiu_scraper_python
-   ```
+> If your downloaded files have names such as `app(4).py`, `scraper_fiu(2).py`, or `index(2).html`, rename them to match the structure above. Flask's `render_template("index.html")` expects the HTML file under `templates/`.
 
-2. (Recommended) Create a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate      # macOS/Linux
-   venv\Scripts\activate         # Windows
-   ```
+## Prerequisites
 
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+- Python 3.9 or newer (recommended)
+- Internet access to retrieve records from FIU and GitHub
+- A modern web browser
 
-4. Run the app:
-   ```
-   python app.py
-   ```
+## Installation
 
-5. Open `http://127.0.0.1:5000` in your browser and click **Run scrape**.
+**1. Clone or download this project's repository.**
 
-## Running the scraper standalone
+If using Git:
 
-You can also run the scraper directly from the command line, without the web app, to save results straight to a CSV:
-
-```
-python scraper_fiu.py
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd <YOUR_REPOSITORY_FOLDER>
 ```
 
-This saves `faculty_members.csv` to your Desktop by default (see `output_path` in `scraper_fiu.py` to change the destination).
+Alternatively, download the project as a ZIP and open the extracted folder in your terminal. Replace the placeholders above with your repository's actual URL and folder name.
 
-## Notes
+**2. (Recommended) Create and activate a virtual environment.**
 
-- The scraper stops automatically once it hits an empty page of results, so it doesn't depend on a hardcoded page count.
-- Faculty category filtering is based on internal FIU staff-category IDs (`543, 544, 545, 549, 550, 551`). If FIU changes their site structure, these may need to be updated.
+On macOS or Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+On Windows (PowerShell):
+
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**3. Install dependencies.**
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+The `requirements.txt` file should contain:
+
+```text
+Flask
+requests
+pandas
+```
+
+## Run the Application
+
+From the project folder:
+
+```bash
+python app.py
+```
+
+Open the local address displayed in the terminal (usually `http://127.0.0.1:5000/`).
+
+If port 5000 is already in use, free that port or change the Flask port in `app.py` (for example, `app.run(debug=True, port=5001)`) and open the corresponding address.
+
+## How to Use
+
+### 1. Pull FIU faculty data
+
+Click **Run scrape** to request the latest faculty roster from FIU's WordPress API through the Flask `/scrape` endpoint. The page displays each matching faculty member's name, title, and email.
+
+Use the search box to filter the roster. Click **Export CSV** to download `faculty_members.csv`.
+
+### 2. Pull CSRankings data
+
+Click **Pull CSRankings Data**. JavaScript downloads the 26 letter-partitioned CSV files from the `gh-pages` branch of the [CSRankings GitHub repository](https://github.com/emeryberger/CSrankings):
+
+```text
+https://raw.githubusercontent.com/emeryberger/CSrankings/gh-pages/csrankings-a.csv
+...
+https://raw.githubusercontent.com/emeryberger/CSrankings/gh-pages/csrankings-z.csv
+```
+
+The browser parses the files and keeps rows whose `affiliation` field exactly matches `Florida International University`. It displays the associated names and ORCIDs. Click **Export CSRankings CSV** to download `fiu_csranking.csv`.
+
+**No local CSRankings clone, build commands, or backend CSRankings API are required.** The browser retrieves the CSV files directly.
+
+### 3. Compare the rosters
+
+Once both datasets have loaded, click **Compare Rosters**. The application shows:
+
+- **On CSRankings, not in FIU scrape:** Possible removals or records needing review.
+- **In FIU scrape, not on CSRankings:** Possible additions or records needing review.
+- **In both:** Matched names across the two sources.
+
+Click **Download diff CSV** to save `roster_comparison.csv`.
+
+**Important:** These are candidates for manual review, not authoritative add/remove decisions. Differences may result from incomplete scraping, affiliation labeling, name variants, or fuzzy-matching errors.
+
+## Data Flow
+
+```text
+FIU WordPress API
+        |
+        v
+scraper_fiu.py  <-- Flask GET /scrape <-- Browser: Run scrape
+        |                                       |
+        +------------ FIU faculty data --------+
+                                                |
+CSRankings GitHub CSVs --> Browser JavaScript --+
+                                                |
+                                        Compare Rosters
+                                                |
+                                  Results + downloadable CSVs
+```
+
+### FIU source
+
+The Python scraper reads paginated staff-member records from:
+
+```text
+https://www.cis.fiu.edu/wp-json/wp/v2/staff-member
+```
+
+It selects records with at least one of the configured WordPress staff category IDs (`543`, `544`, `545`, `549`, `550`, `551`). These IDs are maintained in `scraper_fiu.py`.
+
+### CSRankings source
+
+The frontend uses JavaScript `fetch()` requests to GitHub's raw CSV URLs and filters entries by affiliation. The retrieved records are held in browser memory for the current page session, rather than saved automatically on the server.
+
+## API Endpoint
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Serve the main HTML interface |
+| GET | `/scrape` | Run the FIU faculty scraper and return a JSON response containing `success` and `professors`, or an error |
+
+Example successful response structure:
+
+```json
+{
+  "success": true,
+  "professors": [
+    {"Name": "Example Faculty", "Title": "Professor", "Email": "example@fiu.edu"}
+  ]
+}
+```
+
+The example record is illustrative, not a real scraped result.
+
+## Notes and Limitations
+
+- **Internet required:** Both FIU and GitHub must be accessible. The GitHub requests must also be permitted by the browser's cross-origin policies.
+- **Partial CSRankings results:** The current frontend counts failed CSV downloads but can still display a partial list. Do not treat comparisons as complete if any shard failed.
+- **FIU scrape errors:** The current scraper stops on any non-200 HTTP response, which can also yield an incomplete roster.
+- **Name-matching accuracy:** The comparison uses fuzzy matching, so false matches and missed matches are possible. Review results manually before changing CSRankings records.
+- **No publication metadata:** This app retrieves CSRankings author names and ORCIDs, not per-paper details or publication counts.
+- **CSV files download on demand:** The webpage exports CSVs in the browser; Flask does not automatically save these exports. Running `python scraper_fiu.py` directly also writes `faculty_members.csv` to the user's Desktop, as configured in that script.
+- **Development server:** `app.py` currently runs Flask with `debug=True`, which is suitable for local development, not a production deployment.
+
+## Data Attribution
+
+- FIU faculty data: [FIU School of Computing and Information Sciences](https://www.cis.fiu.edu/)
+- CSRankings author data: [CSRankings GitHub repository](https://github.com/emeryberger/CSrankings)
+
+This project is a comparison aid and is not an official FIU or CSRankings service.
